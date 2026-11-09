@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bijli Bill Split</title>
+<meta name="theme-color" content="#0b3a40">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bijli Bill">
+<style>
+:root{--bg:#eef2f5;--card:#fff;--ink:#0f1d2b;--mut:#5b6b7a;--line:#dbe3ea;--acc:#0e7c86;--accbg:#dff1f2;--amb:#f2b705;--inp:#f6f9fb;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c141b;--card:#142029;--ink:#e8f0f5;--mut:#8da0b0;--line:#25343f;--acc:#4fc3cc;--accbg:#12373b;--inp:#0f1a22}}
+:root[data-theme="dark"]{--bg:#0c141b;--card:#142029;--ink:#e8f0f5;--mut:#8da0b0;--line:#25343f;--acc:#4fc3cc;--accbg:#12373b;--inp:#0f1a22}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+main{max-width:520px;margin:0 auto;padding:16px 14px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+h1{font-size:22px;margin:0;letter-spacing:-.01em}
+.sub{color:var(--mut);font-size:13px;margin-top:2px}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;font-weight:600;font-size:14px}
+.btn.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:12px}
+.seg button{border:0;background:none;border-radius:9px;padding:9px 4px;font-size:13px;font-weight:600;color:var(--mut)}
+.seg button.on{background:var(--acc);color:#fff}
+.hero{background:#0b3a40;color:#e6f6f7;border-radius:18px;padding:18px 16px 16px;margin-bottom:12px}
+.hero .lbl{font-size:14px;opacity:.85}
+.reg{display:flex;align-items:center;gap:5px;margin:10px 0 6px;flex-wrap:nowrap}
+.reg .rs{font-size:26px;font-weight:700;color:var(--amb);margin-right:2px}
+.reg .d{background:#06262a;border:1px solid #1d5961;border-radius:7px;min-width:34px;height:52px;display:grid;place-items:center;font:700 32px ui-monospace,SFMono-Regular,Menlo,monospace;color:#fff}
+.reg .c{font:700 26px ui-monospace,Menlo,monospace;color:var(--amb)}
+.reg .d.f{color:var(--amb)}
+.hero .note{font-size:13px;opacity:.85}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+.tile .k{font-size:12.5px;color:var(--mut)}
+.tile .v{font-size:19px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;font-variant-numeric:tabular-nums}
+.row+.row{border-top:1px solid var(--line)}
+.row .m{color:var(--mut);font-size:14px}
+.row b{font-weight:700}
+.step{display:flex;align-items:center;gap:12px}
+.step button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--inp);font-size:22px;line-height:1}
+.step .n{font-size:22px;font-weight:700;min-width:28px;text-align:center}
+h2{font-size:16px;margin:0 0 4px}
+.meter h3{margin:0;font-size:17px}
+.meter .id{color:var(--mut);font-size:13px}
+.bar{height:6px;background:var(--line);border-radius:3px;margin:8px 0 2px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc)}
+.pill{display:inline-block;background:var(--accbg);color:var(--acc);border-radius:20px;padding:3px 10px;font-size:12.5px;font-weight:600}
+.ed{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.ed label{font-size:12px;color:var(--mut);display:block}
+.ed input{width:100%;border:1px solid var(--line);background:var(--inp);color:var(--ink);border-radius:8px;padding:8px;font:inherit;font-size:15px}
+.ed .w{grid-column:1/-1}
+.link{background:none;border:0;color:var(--acc);font-weight:600;padding:6px 0}
+.danger{color:#c2410c}
+.foot{color:var(--mut);font-size:12.5px;text-align:center;margin-top:6px}
+.tip{font-size:13px;color:var(--mut);margin:0}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+var KEY='bijli-bill-v1';
+var DEF={persons:3,mode:'once',edit:false,months:['Sep 2026','Oct 2026','Nov 2026'],period:'Readings 04 Jun to 06 Sep 2026',meters:[
+{name:'Kartick Chandra Mondal',cid:'112062439',units:113,gross:568.52,pay:551,epay:544,mo:[188,187,187]},
+{name:'Haridas Mondal',cid:'105410904',units:102,gross:521.85,pay:510,epay:504,mo:[185,168,168]},
+{name:'Gopal Mondal',cid:'100688235',units:1113,gross:9258.42,pay:9064,epay:8982,mo:[3062,3057,3057]}]};
+var S;
+try{var raw=localStorage.getItem(KEY);S=raw?JSON.parse(raw):null}catch(e){S=null}
+if(!S||!S.meters)S=JSON.parse(JSON.stringify(DEF));
+S.edit=false;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function num(x){x=parseFloat(x);return isNaN(x)?0:x}
+function fmt(n){return '₹'+num(n).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function meterMonths(m){
+  if(S.mode==='monthly')return [0,1,2].map(function(i){return num(m.mo[i])});
+  var t=num(S.mode==='epay'?m.epay:m.pay);return [t/3,t/3,t/3];
+}
+function calc(){
+  var p=Math.max(1,Math.round(num(S.persons))||1),gross=0,units=0,months=[0,0,0];
+  S.meters.forEach(function(m){gross+=num(m.gross);units+=num(m.units);meterMonths(m).forEach(function(v,i){months[i]+=v})});
+  var total=months[0]+months[1]+months[2];
+  return {p:p,gross:gross,units:units,months:months,total:total,avg:total/3};
+}
+function hero(v){
+  var s=Math.round(v).toLocaleString('en-IN'),h='<div class="reg"><span class="rs">₹</span>';
+  for(var i=0;i<s.length;i++){var c=s[i];h+=c===','?'<span class="c">,</span>':'<span class="d">'+c+'</span>'}
+  return h+'</div>';
+}
+var MODES=[['once','Pay at once'],['epay','e-Payment'],['monthly','Month by month']];
+function render(){
+  var c=calc(),h='';
+  h+='<header><div><h1>Bijli Bill Split</h1><div class="sub">'+esc(S.period)+' · '+S.meters.length+' meters</div></div>'+
+     '<button class="btn'+(S.edit?' on':'')+'" onclick="tog()">'+(S.edit?'Done':'Edit')+'</button></header>';
+  h+='<div class="seg">'+MODES.map(function(m){return '<button class="'+(S.mode===m[0]?'on':'')+'" onclick="setMode(\''+m[0]+'\')">'+m[1]+'</button>'}).join('')+'</div>';
+  h+='<section class="hero"><div class="lbl">Each person pays per month</div>'+hero(c.avg/c.p)+
+     '<div class="note">'+fmt(c.avg/c.p)+' × '+c.p+' people = '+fmt(c.avg)+' per month</div></section>';
+  h+='<div class="grid">'+
+    '<div class="tile"><div class="k">Gross total (3 months)</div><div class="v">'+fmt(c.gross)+'</div></div>'+
+    '<div class="tile"><div class="k">You pay (3 months)</div><div class="v">'+fmt(c.total)+'</div></div>'+
+    '<div class="tile"><div class="k">Per month, all meters</div><div class="v">'+fmt(c.avg)+'</div></div>'+
+    '<div class="tile"><div class="k">Per person, 3 months</div><div class="v">'+fmt(c.total/c.p)+'</div></div></div>';
+  h+='<div class="box"><div class="row"><h2>People sharing</h2><div class="step"><button onclick="addP(-1)" aria-label="Fewer people">−</button><span class="n">'+c.p+'</span><button onclick="addP(1)" aria-label="More people">+</button></div></div></div>';
+  h+='<div class="box"><h2>Month by month</h2>'+c.months.map(function(v,i){
+    return '<div class="row"><span class="m">'+esc(S.months[i])+'</span><span><b>'+fmt(v)+'</b> <span class="m">('+fmt(v/c.p)+' each)</span></span></div>'}).join('')+'</div>';
+  S.meters.forEach(function(m,i){
+    var mm=meterMonths(m),t=mm[0]+mm[1]+mm[2],share=c.units?num(m.units)/c.units*100:0;
+    h+='<div class="box meter"><h3>'+esc(m.name||'New meter')+'</h3><div class="id">Consumer ID '+esc(m.cid||'-')+'</div>';
+    if(!S.edit){
+      h+='<div class="bar"><i style="width:'+share.toFixed(1)+'%"></i></div><div class="id">'+num(m.units)+' units, '+share.toFixed(0)+'% of all usage</div>'+
+      '<div class="row"><span class="m">Gross amount</span><b>'+fmt(m.gross)+'</b></div>'+
+      '<div class="row"><span class="m">Pay at once</span><b>'+fmt(m.pay)+'</b></div>'+
+      '<div class="row"><span class="m">e-Payment</span><b>'+fmt(m.epay)+'</b></div>'+
+      '<div class="row"><span class="m">'+esc(S.months[0])+' / '+esc(S.months[1])+' / '+esc(S.months[2])+'</span><b>'+m.mo.map(function(x){return num(x).toLocaleString('en-IN')}).join(' / ')+'</b></div>'+
+      '<div class="row"><span class="pill">Your pick: '+fmt(t/3)+' per month</span><span class="m">'+fmt(t/3/c.p)+' each</span></div>';
+    }else{
+      h+='<div class="ed">'+
+      f(i,'name','Name',m.name,'w','text')+f(i,'cid','Consumer ID',m.cid,'','text')+f(i,'units','Units',m.units,'','number')+
+      f(i,'gross','Gross amount',m.gross,'','number')+f(i,'pay','Pay at once',m.pay,'','number')+f(i,'epay','e-Payment',m.epay,'','number')+
+      [0,1,2].map(function(k){return '<div><label>'+esc(S.months[k])+'</label><input type="number" inputmode="decimal" value="'+num(m.mo[k])+'" onchange="setMo('+i+','+k+',this.value)"></div>'}).join('')+
+      '</div><button class="link danger" onclick="delM('+i+')">Remove this meter</button>';
+    }
+    h+='</div>';
+  });
+  if(S.edit){
+    h+='<button class="btn" style="width:100%;margin-bottom:12px" onclick="addM()">Add a meter</button>'+
+       '<div class="box"><h2>Bill period</h2><div class="ed"><div class="w"><label>Label</label><input value="'+esc(S.period)+'" onchange="S.period=this.value;save()"></div>'+
+       [0,1,2].map(function(k){return '<div><label>Month '+(k+1)+'</label><input value="'+esc(S.months[k])+'" onchange="S.months['+k+']=this.value;save()"></div>'}).join('')+
+       '</div><button class="link danger" onclick="reset()">Reset to the Sep 2026 bills</button></div>';
+  }
+  h+='<p class="foot">Gross is before the special rebate. Edit any value for your next bill; it stays on this phone.</p>';
+  document.getElementById('app').innerHTML=h;
+}
+function f(i,k,l,v,cls,type){
+  return '<div class="'+cls+'"><label>'+l+'</label><input type="'+type+'" '+(type==='number'?'inputmode="decimal" ':'')+'value="'+esc(v)+'" onchange="setF('+i+',\''+k+'\',this.value)"></div>';
+}
+function setF(i,k,v){S.meters[i][k]=(k==='name'||k==='cid')?v:num(v);save();render()}
+function setMo(i,k,v){S.meters[i].mo[k]=num(v);save();render()}
+function setMode(m){S.mode=m;save();render()}
+function addP(d){S.persons=Math.max(1,Math.min(20,(Math.round(num(S.persons))||1)+d));save();render()}
+function tog(){S.edit=!S.edit;render();window.scrollTo(0,0)}
+function addM(){S.meters.push({name:'New meter',cid:'',units:0,gross:0,pay:0,epay:0,mo:[0,0,0]});save();render()}
+function delM(i){if(confirm('Remove this meter?')){S.meters.splice(i,1);save();render()}}
+function reset(){if(confirm('Reset everything to the Sep 2026 bills?')){S=JSON.parse(JSON.stringify(DEF));save();render()}}
+render();
+</script>
+</body>
+</html>
